@@ -23,7 +23,7 @@ Blockly.Blocks['event_input_0_high'] = {
     this.appendDummyInput().appendField("kiedy wciśnięto przycisk dla pieszych");
     this.setNextStatement(true, null);
 	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie wciśnięcia przycisku");
+	this.setTooltip("Zarejestrowanie wciśnięcia przycisku dla pieszych");
   }
 };
 
@@ -32,7 +32,7 @@ Blockly.Blocks['event_input_0_low'] = {
     this.appendDummyInput().appendField("kiedy puszczono przycisk dla pieszych");
     this.setNextStatement(true, null);
 	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie puszczenia przycisku");
+	this.setTooltip("Zarejestrowanie puszczenia przycisku dla pieszych");
   }
 };
 
@@ -41,7 +41,7 @@ Blockly.Blocks['event_input_1_high'] = {
     this.appendDummyInput().appendField("kiedy wciśnięto przycisk pomocniczy");
     this.setNextStatement(true, null);
 	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie wciśnięcia przycisku");
+	this.setTooltip("Zarejestrowanie wciśnięcia przycisku BOOT");
   }
 };
 
@@ -50,7 +50,7 @@ Blockly.Blocks['event_input_1_low'] = {
     this.appendDummyInput().appendField("kiedy puszczono przycisk pomocniczy");
     this.setNextStatement(true, null);
 	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie puszczenia przycisku");
+	this.setTooltip("Zarejestrowanie puszczenia przycisku BOOT");
   }
 };
 
@@ -90,7 +90,7 @@ Blockly.Blocks['sensor_input_0'] = {
     this.appendDummyInput()
         .appendField("przycisk dla pieszych wciśnięty");
     this.setOutput(true, "Boolean");
-	this.setTooltip("Zwraca prawdę, jeśli przycisk jest wciśnięty");
+	this.setTooltip("Zwraca prawdę, jeśli przycisk dla pieszych jest wciśnięty");
   }
 };
 
@@ -142,15 +142,15 @@ Blockly.Blocks['action_led_builtin'] = {
 	this.appendDummyInput()
 		.appendField("wbudowany LED: czerwony ")
 		.appendField(new Blockly.FieldDropdown([
-			["WYŁ", "0"],["WŁ", "1"]
+			["wył", "0"],["wł", "1"]
 		]), "R")
-		.appendField("zielony ")
+		.appendField(", zielony ")
 		.appendField(new Blockly.FieldDropdown([
-			["WYŁ", "0"],["WŁ", "1"]
+			["wył", "0"],["wł", "1"]
 		]), "G")
-		.appendField("niebieski ")
+		.appendField(", niebieski ")
 		.appendField(new Blockly.FieldDropdown([
-			["WYŁ", "0"],["WŁ", "1"]
+			["wył", "0"],["wł", "1"]
 		]), "B");
 	this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
@@ -246,15 +246,16 @@ if (originalShowPositionedByField) {
     originalShowPositionedByField.call(this, field, opt_onHide);
 
     if (window.innerHeight <= 450 && window.innerWidth > window.innerHeight) {
+	  const offset = 30;
       const div = document.querySelector('.blocklyDropDownDiv');
       if (!div) return;
       const fieldSvg = field.getSvgRoot();
       if (!fieldSvg) return;
       const fieldRect = fieldSvg.getBoundingClientRect();
       const divRect = div.getBoundingClientRect();
-      let left = fieldRect.right + 15; 
+      let left = fieldRect.right + offset; 
       if (left + divRect.width > window.innerWidth) {
-        left = fieldRect.left - divRect.width - 15;
+        left = fieldRect.left - divRect.width - offset;
       }
       let top = fieldRect.top + (fieldRect.height / 2) - (divRect.height / 2);
       if (top < 5) top = 5;
@@ -500,71 +501,82 @@ async function initApp() {
 	});
 	
 	Blockly.FieldNumber.prototype.showEditor_ = function(opt_e) {
-	  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.userAgentData && navigator.userAgentData.mobile);
-	  if (!isMobile) {
-		originalFieldNumberShowEditor.call(this, opt_e);
-		return;
-	  }
-	  const contentDiv = Blockly.DropDownDiv.getContentDiv();
-	  contentDiv.innerHTML = '';
-	  const numpad = document.createElement('div');
-	  numpad.className = 'scratch-numpad';
-	  const initialVal = this.getValue().toString();
-	  let currentVal = initialVal;
-	  if (currentVal === '0') currentVal = '';
-	  let isConfirmed = false;
-	  const originalGetDisplayText = this.getDisplayText_;
-	  const originalGetText = this.getText;
-	  this.getDisplayText_ = () => currentVal || '0';
-	  this.getText = () => currentVal || '0';
-	  const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '0', '.', '⌫', 'Zatwierdź'];
-	  buttons.forEach(text => {
-		const btn = document.createElement('button');
-		btn.innerText = text;
-		btn.className = 'numpad-btn';
-		if (text === '⌫') {
-		  btn.classList.add('btn-delete');
-		} else if (text === 'Zatwierdź') {
-		  btn.classList.add('btn-confirm');
-		  btn.style.gridColumn = 'span 2';
-		}
-		btn.addEventListener('click', (e) => {
-		  e.preventDefault();
-		  if (text === 'Zatwierdź') {
-			isConfirmed = true;
-			Blockly.DropDownDiv.hideIfOwner(this);
-			return;
-		  }
-		  if (text === '⌫') {
-			currentVal = currentVal.slice(0, -1);
-		  } else if (text === '-') {
-			if (currentVal.startsWith('-')) {
-			  currentVal = currentVal.slice(1);
-			} else {
-			  currentVal = '-' + currentVal;
-			}
-		  } else {
-			if (text === '.' && currentVal.includes('.')) return;
-			currentVal += text;
-		  }
-		  this.setValue(currentVal || '0');
-		  if (this.forceRerender) this.forceRerender();
-		});
-		numpad.appendChild(btn);
-	  });
-	  contentDiv.appendChild(numpad);
-	  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
-	  Blockly.DropDownDiv.showPositionedByField(this, () => {
-		if (originalGetDisplayText) this.getDisplayText_ = originalGetDisplayText;
-		if (originalGetText) this.getText = originalGetText;
-		if (isConfirmed) {
-		  this.setValue(currentVal || '0');
-		} else {
-		  this.setValue(initialVal);
-		}
-		if (this.forceRerender) this.forceRerender();
-	  });
-	};
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.userAgentData && navigator.userAgentData.mobile);
+  if (!isMobile) {
+    originalFieldNumberShowEditor.call(this, opt_e);
+    return;
+  }
+  const contentDiv = Blockly.DropDownDiv.getContentDiv();
+  contentDiv.innerHTML = '';
+  const numpad = document.createElement('div');
+  numpad.className = 'scratch-numpad';
+  
+  const initialVal = this.getValue().toString();
+  let currentVal = '';
+  
+  let isConfirmed = false;
+
+  const originalGetDisplayText = this.getDisplayText_;
+  const originalGetText = this.getText;
+  
+  this.getDisplayText_ = () => currentVal;
+  this.getText = () => currentVal;
+  
+  if (this.forceRerender) this.forceRerender();
+  
+  const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '0', '.', '⌫', 'Zatwierdź'];
+  buttons.forEach(text => {
+    const btn = document.createElement('button');
+    btn.innerText = text;
+    btn.className = 'numpad-btn';
+    if (text === '⌫') {
+      btn.classList.add('btn-delete');
+    } else if (text === 'Zatwierdź') {
+      btn.classList.add('btn-confirm');
+      btn.style.gridColumn = 'span 2';
+    }
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      if (text === 'Zatwierdź') {
+        isConfirmed = true;
+        Blockly.DropDownDiv.hideIfOwner(this);
+        return;
+      }
+
+      if (text === '⌫') {
+        currentVal = currentVal.slice(0, -1);
+      } else if (text === '-') {
+        if (currentVal.startsWith('-')) {
+          currentVal = currentVal.slice(1);
+        } else {
+          currentVal = '-' + currentVal;
+        }
+      } else {
+        if (text === '.' && currentVal.includes('.')) return;
+        currentVal += text;
+      }
+      
+      if (this.forceRerender) this.forceRerender();
+    });
+    numpad.appendChild(btn);
+  });
+  
+  contentDiv.appendChild(numpad);
+  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+  
+  Blockly.DropDownDiv.showPositionedByField(this, () => {
+    if (originalGetDisplayText) this.getDisplayText_ = originalGetDisplayText;
+    if (originalGetText) this.getText = originalGetText;
+    
+    if (isConfirmed) {
+      this.setValue(currentVal || '0');
+    } else {
+      this.setValue(initialVal);
+    }
+    if (this.forceRerender) this.forceRerender();
+  });
+};
 			
     workspace = Blockly.inject('blocklyDiv', {
       toolbox: autoColorBlocksFromXml(toolboxText),
