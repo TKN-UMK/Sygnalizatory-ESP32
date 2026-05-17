@@ -1,0 +1,412 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	font-family: 'Segoe UI', sans-serif;
+}
+
+body { 
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+}
+
+header {
+  background-color: #0D1B2A;
+  color: white;
+  padding: 0 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.safe-area-top {
+    height: env(safe-area-inset-top, 0px);
+    background-color: black;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+#blocklyArea {
+	flex-grow: 1;
+	position: relative;
+	background-color: #f0f2f5;
+}
+
+#blocklyDiv {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.blocklyMainWorkspaceScrollbar {
+    display: none !important;
+}
+
+.blocklySelected>.blocklyPath {
+  stroke: #fdfc46 !important;
+  stroke-width: 1px !important;
+}
+
+.header-left, .header-btns {
+  display: flex;
+  gap: 3px;
+  flex: 1;
+}
+
+.header-btns {
+  justify-content: flex-end;
+}
+
+#bluetoothBtn {
+  flex: 0 0 auto;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 3px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.icon-btn img {
+  width: 100%;
+  height: auto;
+}
+
+.icon-btn:hover {
+  transform: scale(1.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+#toast-wrapper {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 65px); 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast-card {
+  pointer-events: auto;
+  background: white;
+  min-width: 320px;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  display: flex;
+  overflow: hidden;
+  animation: slideIn 0.4s ease forwards;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toast-card.hide {
+  animation: slideOut 0.4s ease forwards;
+}
+
+@keyframes slideOut {
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+.toast-side-bar {
+  width: 6px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.toast-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.toast-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-title {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.toast-msg {
+  color: #666;
+  font-size: 13px;
+}
+
+.toast-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.toast-success .toast-side-bar, .toast-success .toast-icon { background-color: #47D764; }
+.toast-error   .toast-side-bar, .toast-error   .toast-icon { background-color: #ff355b; }
+.toast-info    .toast-side-bar, .toast-info    .toast-icon { background-color: #2F86EB; }
+.toast-warning .toast-side-bar, .toast-warning .toast-icon { background-color: #FFC021; }
+
+.toast-icon svg { fill: white; width: 16px; height: 16px; }
+
+.blocklyToolboxCategoryContainer,
+.blocklyToolboxCategoryContainer:focus,
+.blocklyToolboxCategoryContainer:focus-visible,
+.blocklyToolboxCategoryContainer:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.blocklyToolbox {
+  background-color: #ffffff !important;
+  border-right: 1px solid #eef1f6 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02) !important;
+}
+
+.blocklyDropDownDiv, 
+.blocklyDropDownDiv:focus, 
+.blocklyDropDownDiv:focus-visible,
+.blocklyDropDownDiv:active {
+    outline: none !important;
+    -webkit-text-size-adjust: none;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    padding: 0 !important;
+    overflow: hidden !important; 
+}
+
+.scratch-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 8px;
+  background-color: #f2f3f5;
+  border-radius: 8px;
+  width: 180px;
+  user-select: none;
+}
+
+.numpad-btn {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  color: #3d3d3d;
+  font-size: 18px;
+  font-weight: bold;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.1s, transform 0.05s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; 
+}
+
+.numpad-btn:active {
+  background-color: #e2e4e9;
+  transform: scale(0.95);
+}
+
+.btn-delete {
+  background-color: #ff355b;
+  color: white;
+}
+.btn-delete:active {
+  background-color: #b81d3a;
+}
+
+.btn-confirm {
+  background-color: #28c76f;
+  color: white;
+}
+.btn-confirm:active {
+  background-color: #1e9452;
+}
+
+.toolbox-delete-zone::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(74, 85, 104, 0.07);
+  border-right: 2px dashed #4a5568;
+  z-index: 99;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234a5568'><path d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 36px;
+  
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  
+  transition: background-size 0.15s ease-in-out, background-color 0.15s ease-in-out, backdrop-filter 0.15s ease-in-out;
+  animation: toolboxFadeIn 0.15s ease-in-out forwards;
+}
+
+@keyframes toolboxFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.custom-modal {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 280px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.custom-modal-title {
+  color: #3d3d3d;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.custom-modal-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 2px solid #dbe1e8;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #3d3d3d;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.custom-modal-input:focus {
+  border-color: #28c76f;
+}
+
+.custom-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.custom-modal-btn {
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #f2f3f5;
+  color: #4a5568;
+}
+
+.btn-cancel:active {
+  background-color: #e2e4e9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-height: 450px) {
+  .custom-modal-overlay {
+    align-items: flex-start !important;
+    padding-top: 6px;
+  }
+
+  .custom-modal {
+    width: 95% !important;
+    max-width: 550px;
+    padding: 8px 12px !important;
+    gap: 6px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between;
+  }
+
+  .custom-modal-title {
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+
+  .custom-modal-input {
+    flex: 1;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+
+  .custom-modal-actions {
+    gap: 6px !important;
+  }
+
+  .custom-modal-btn {
+    height: 32px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+  }
+}

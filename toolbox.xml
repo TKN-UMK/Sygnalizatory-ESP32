@@ -1,0 +1,47 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <category name="Kontrola" colour="#FFAB19">
+	<block type="event_start"></block>
+    <block type="action_wait"></block>
+	<block type="controls_repeat_ext">
+      <value name="TIMES">
+        <shadow type="math_number"><field name="NUM">3</field></shadow>
+      </value>
+    </block>
+	<block type="control_forever"></block>
+	<block type="controls_if"></block>
+	<block type="control_wait_until"></block>
+    <block type="controls_whileUntil"></block>    
+    <block type="controls_flow_statements"></block>
+  </category>
+    
+  <category name="Światła" colour="#4C97FF">
+    <block type="action_led_traffic"></block>
+    <block type="action_led_pedestrian"></block>
+	<block type="action_led_turn_off_all"></block>
+	<block type="action_led_builtin"></block>
+  </category>
+  
+  <category name="Przyciski" colour="#2EAFB0">
+	<block type="event_input_0_high"></block>
+	<block type="event_input_0_low"></block>
+	<block type="event_input_1_high"></block>
+	<block type="event_input_1_low"></block>
+	<block type="sensor_input_0"></block>
+	<block type="sensor_input_1"></block>
+  </category>
+
+  <category name="Wyrażenia" colour="#59C059">
+	<block type="math_number">
+      <field name="NUM">0</field>
+    </block>
+    <block type="math_arithmetic"></block>
+    <block type="logic_compare"></block>
+    <block type="logic_operation"></block>
+    <block type="logic_negate"></block>
+    <block type="logic_boolean"></block>
+  </category>
+  
+  <category name="Zmienne" custom="VARIABLE" colour="#FF8C1A"></category>
+  
+  <category name="Moje bloki" custom="PROCEDURE" colour="#995BA5"></category>
+</xml>

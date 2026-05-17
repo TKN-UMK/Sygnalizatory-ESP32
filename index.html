@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Sygnalizacja</title>
+  <link rel="stylesheet" href="style.css?v=55">
+  
+  <script src="lib/blockly.js"></script>
+  <script src="lib/pl.js"></script>
+  <script src="lib/javascript_compressed.js"></script>
+</head>
+<body>
+  <div class="safe-area-top"></div>
+  <div id="toast-wrapper"></div>
+
+  <header>
+	  <div class="header-left">
+		<button id="menuBtn" class="icon-btn" onclick="toggleMenu()">
+		  <img src="icons/menu.png?v=1" alt="Bloki">
+		</button>
+		<button id="fullscreenBtn" class="icon-btn" onclick="toggleFullscreen()">
+		  <img src="icons/fullscreen.png" alt="Pełny ekran">
+		</button>
+	  </div>
+
+	  <button id="bluetoothBtn" class="icon-btn" onclick="connectBLE()">
+		<img src="icons/bt_disconnected.png" alt="Połącz">
+	  </button>
+
+	  <div class="header-btns">
+		<button id="runStopButton" class="icon-btn" onclick="handleRunStop()">
+		  <img src="icons/run.png" alt="Uruchom">
+		</button>
+	  </div>
+	</header>
+
+  <div id="blocklyArea">
+    <div id="blocklyDiv"></div>
+  </div>
+  
+  <script src="script.js?v=55"></script>
+
+</body>
+</html>
