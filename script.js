@@ -18,39 +18,49 @@ const CHAR_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 const encodeIO = (index, state) => (index << 1) | (state ? 1 : 0);
 const decodeIO = (byte) => ({index: byte >> 1, state: byte & 0x01});
 
-Blockly.Blocks['event_input_0_high'] = {
+let isLastInputTouch = false;
+
+window.addEventListener('touchstart', () => {
+  isLastInputTouch = true;
+  document.body.classList.add('touch-user');
+  document.body.classList.remove('mouse-user');
+}, { passive: true });
+
+window.addEventListener('mousemove', function onMouseMove() {
+  isLastInputTouch = false;
+  document.body.classList.add('mouse-user');
+  document.body.classList.remove('touch-user');
+});
+
+Blockly.Blocks['event_input_0_change'] = {
   init: function() {
-    this.appendDummyInput().appendField("kiedy wciśnięto przycisk dla pieszych");
+    this.appendDummyInput()
+        .appendField("kiedy")
+        .appendField(new Blockly.FieldDropdown([
+          ["wciśnięto", "HIGH"], 
+          ["puszczono", "LOW"]
+        ]), "STATE")
+        .appendField("przycisk dla pieszych");
+        
     this.setNextStatement(true, null);
-	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie wciśnięcia przycisku dla pieszych");
+    this.hat = 'cap';
+    this.setTooltip("Zarejestrowanie zmiany stanu przycisku dla pieszych");
   }
 };
 
-Blockly.Blocks['event_input_0_low'] = {
+Blockly.Blocks['event_input_1_change'] = {
   init: function() {
-    this.appendDummyInput().appendField("kiedy puszczono przycisk dla pieszych");
+    this.appendDummyInput()
+        .appendField("kiedy")
+        .appendField(new Blockly.FieldDropdown([
+          ["wciśnięto", "HIGH"], 
+          ["puszczono", "LOW"]
+        ]), "STATE")
+        .appendField("przycisk pomocniczy");
+        
     this.setNextStatement(true, null);
-	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie puszczenia przycisku dla pieszych");
-  }
-};
-
-Blockly.Blocks['event_input_1_high'] = {
-  init: function() {
-    this.appendDummyInput().appendField("kiedy wciśnięto przycisk pomocniczy");
-    this.setNextStatement(true, null);
-	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie wciśnięcia przycisku BOOT");
-  }
-};
-
-Blockly.Blocks['event_input_1_low'] = {
-  init: function() {
-    this.appendDummyInput().appendField("kiedy puszczono przycisk pomocniczy");
-    this.setNextStatement(true, null);
-	this.hat = 'cap';
-	this.setTooltip("Zarejestrowanie puszczenia przycisku BOOT");
+    this.hat = 'cap';
+    this.setTooltip("Zarejestrowanie zmiany stanu przycisku BOOT");
   }
 };
 
@@ -111,7 +121,7 @@ Blockly.Blocks['action_led_traffic'] = {
 			["zapal", "1"],["zgaś", "0"]
 		]), "STATE")
 		.appendField(new Blockly.FieldDropdown([
-			["czerwone", "0"],["żółte", "1"],["zielone", "2"]
+			["czerwone 🔴", "0"],["żółte 🟡", "1"],["zielone 🟢", "2"]
 		]), "COLOR")
 		.appendField("światło");
 	this.setPreviousStatement(true, null);
@@ -128,7 +138,7 @@ Blockly.Blocks['action_led_pedestrian'] = {
 			["zapal", "1"],["zgaś", "0"]
 		]), "STATE")
 		.appendField(new Blockly.FieldDropdown([
-			["czerwone", "3"],["zielone", "4"]
+			["czerwone 🔴", "3"],["zielone 🟢", "4"]
 		]), "COLOR")
 		.appendField("światło");
 	this.setPreviousStatement(true, null);
@@ -140,18 +150,12 @@ Blockly.Blocks['action_led_pedestrian'] = {
 Blockly.Blocks['action_led_builtin'] = {
   init: function() {
 	this.appendDummyInput()
-		.appendField("wbudowany LED: czerwony ")
-		.appendField(new Blockly.FieldDropdown([
-			["wył", "0"],["wł", "1"]
-		]), "R")
-		.appendField(", zielony ")
-		.appendField(new Blockly.FieldDropdown([
-			["wył", "0"],["wł", "1"]
-		]), "G")
-		.appendField(", niebieski ")
-		.appendField(new Blockly.FieldDropdown([
-			["wył", "0"],["wł", "1"]
-		]), "B");
+        .appendField("wbudowana dioda: 🔴")
+        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "R")
+        .appendField("🟢")
+        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "G")
+        .appendField("🔵")
+        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "B");
 	this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
 	this.setTooltip("Sterowanie wbudowaną diodą świecącą");
@@ -240,6 +244,11 @@ jsGen.forBlock['action_wait'] = (block) => {
   const ms = block.getFieldValue('SECONDS') * 1000;
   return `await flushActions();\nawait sleep(${ms});\n`;
 };
+
+window.addEventListener('DOMContentLoaded', checkRealOrientation);
+window.addEventListener('orientationchange', () => {
+  setTimeout(checkRealOrientation, 200);
+});
 
 if (originalShowPositionedByField) {
   Blockly.DropDownDiv.showPositionedByField = function(field, opt_onHide) {
@@ -431,6 +440,22 @@ function autoColorBlocksFromXml(xmlInput) {
   return xmlInput;
 }
 
+function checkRealOrientation() {
+  let isLandscape = false;
+
+  if (screen.orientation && screen.orientation.type) {
+    isLandscape = screen.orientation.type.includes('landscape');
+  } else {
+    isLandscape = Math.abs(window.orientation) === 90;
+  }
+
+  if (isLandscape) {
+    document.body.classList.add('real-landscape');
+  } else {
+    document.body.classList.remove('real-landscape');
+  }
+}
+
 async function initApp() {
   try {
     const response = await fetch('toolbox.xml');
@@ -501,86 +526,86 @@ async function initApp() {
 	});
 	
 	Blockly.FieldNumber.prototype.showEditor_ = function(opt_e) {
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.userAgentData && navigator.userAgentData.mobile);
-  if (!isMobile) {
-    originalFieldNumberShowEditor.call(this, opt_e);
-    return;
-  }
-  const contentDiv = Blockly.DropDownDiv.getContentDiv();
-  contentDiv.innerHTML = '';
-  const numpad = document.createElement('div');
-  numpad.className = 'scratch-numpad';
-  
-  const initialVal = this.getValue().toString();
-  let currentVal = '';
-  
-  let isConfirmed = false;
+	 
+	  if (!isLastInputTouch) {
+		originalFieldNumberShowEditor.call(this, opt_e);
+		return;
+	  }
+	  const contentDiv = Blockly.DropDownDiv.getContentDiv();
+	  contentDiv.innerHTML = '';
+	  const numpad = document.createElement('div');
+	  numpad.className = 'scratch-numpad';
+	  
+	  const initialVal = this.getValue().toString();
+	  let currentVal = '';
+	  
+	  let isConfirmed = false;
 
-  const originalGetDisplayText = this.getDisplayText_;
-  const originalGetText = this.getText;
-  
-  this.getDisplayText_ = () => currentVal;
-  this.getText = () => currentVal;
-  
-  if (this.forceRerender) this.forceRerender();
-  
-  const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '0', '.', '⌫', 'Zatwierdź'];
-  buttons.forEach(text => {
-    const btn = document.createElement('button');
-    btn.innerText = text;
-    btn.className = 'numpad-btn';
-    if (text === '⌫') {
-      btn.classList.add('btn-delete');
-    } else if (text === 'Zatwierdź') {
-      btn.classList.add('btn-confirm');
-      btn.style.gridColumn = 'span 2';
-    }
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      if (text === 'Zatwierdź') {
-        isConfirmed = true;
-        Blockly.DropDownDiv.hideIfOwner(this);
-        return;
-      }
+	  const originalGetDisplayText = this.getDisplayText_;
+	  const originalGetText = this.getText;
+	  
+	  this.getDisplayText_ = () => currentVal;
+	  this.getText = () => currentVal;
+	  
+	  if (this.forceRerender) this.forceRerender();
+	  
+	  const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '0', '.', '⌫', 'Zatwierdź'];
+	  buttons.forEach(text => {
+		const btn = document.createElement('button');
+		btn.innerText = text;
+		btn.className = 'numpad-btn';
+		if (text === '⌫') {
+		  btn.classList.add('btn-delete');
+		} else if (text === 'Zatwierdź') {
+		  btn.classList.add('btn-confirm');
+		  btn.style.gridColumn = 'span 2';
+		}
+		btn.addEventListener('click', (e) => {
+		  e.preventDefault();
+		  
+		  if (text === 'Zatwierdź') {
+			isConfirmed = true;
+			Blockly.DropDownDiv.hideIfOwner(this);
+			return;
+		  }
 
-      if (text === '⌫') {
-        currentVal = currentVal.slice(0, -1);
-      } else if (text === '-') {
-        if (currentVal.startsWith('-')) {
-          currentVal = currentVal.slice(1);
-        } else {
-          currentVal = '-' + currentVal;
-        }
-      } else {
-        if (text === '.' && currentVal.includes('.')) return;
-        currentVal += text;
-      }
-      
-      if (this.forceRerender) this.forceRerender();
-    });
-    numpad.appendChild(btn);
-  });
-  
-  contentDiv.appendChild(numpad);
-  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
-  
-  Blockly.DropDownDiv.showPositionedByField(this, () => {
-    if (originalGetDisplayText) this.getDisplayText_ = originalGetDisplayText;
-    if (originalGetText) this.getText = originalGetText;
-    
-    if (isConfirmed) {
-      this.setValue(currentVal || '0');
-    } else {
-      this.setValue(initialVal);
-    }
-    if (this.forceRerender) this.forceRerender();
-  });
-};
+		  if (text === '⌫') {
+			currentVal = currentVal.slice(0, -1);
+		  } else if (text === '-') {
+			if (currentVal.startsWith('-')) {
+			  currentVal = currentVal.slice(1);
+			} else {
+			  currentVal = '-' + currentVal;
+			}
+		  } else {
+			if (text === '.' && currentVal.includes('.')) return;
+			currentVal += text;
+		  }
+		  
+		  if (this.forceRerender) this.forceRerender();
+		});
+		numpad.appendChild(btn);
+	  });
+	  
+	  contentDiv.appendChild(numpad);
+	  Blockly.DropDownDiv.setColour('#ffffff', '#dddddd');
+	  
+	  Blockly.DropDownDiv.showPositionedByField(this, () => {
+		if (originalGetDisplayText) this.getDisplayText_ = originalGetDisplayText;
+		if (originalGetText) this.getText = originalGetText;
+		
+		if (isConfirmed) {
+		  this.setValue(currentVal || '0');
+		} else {
+		  this.setValue(initialVal);
+		}
+		if (this.forceRerender) this.forceRerender();
+	  });
+	};
 			
     workspace = Blockly.inject('blocklyDiv', {
       toolbox: autoColorBlocksFromXml(toolboxText),
-      maxInstances: { 'event_start': 1, 'event_input_0_high': 1, 'event_input_0_low': 1, 'event_input_1_high': 1, 'event_input_1_low': 1}, 
+      maxInstances: { 'event_start': 1}, 
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
 	  zoom: { controls: true, wheel: true, startScale: 1.0 },
 	  trashcan: false,
@@ -741,22 +766,33 @@ function updateInputState(index, value) {
   const oldValue = currentInputs[index];
   currentInputs[index] = value;
   
-  if (oldValue === 0 && value === 1) executeEventBlock(`event_input_${index}_high`);
-  else if (oldValue === 1 && value === 0) executeEventBlock(`event_input_${index}_low`);
+  if (oldValue === 0 && value === 1) {
+    executeEventBlock(index, 'HIGH');
+  } else if (oldValue === 1 && value === 0) {
+    executeEventBlock(index, 'LOW');
+  }
 }
 
-async function executeEventBlock(blockType) {
+async function executeEventBlock(index, triggeredState) {
   if (!workspace || !isRunning) return;
   
+  const blockType = `event_input_${index}_change`;
   if (runningEvents.has(blockType)) return;
   
-  let lastId = null; 
   const blocks = workspace.getAllBlocks(false);
-  const eventBlock = blocks.find(b => b.type === blockType);
+  
+  const eventBlock = blocks.find(b => {
+    if (b.type === blockType) {
+      const selectedState = b.getFieldValue('STATE');
+      return selectedState === triggeredState;
+    }
+    return false;
+  });
 
-  if (eventBlock && eventBlock.getNextBlock()) {	
-	runningEvents.add(blockType);
+  if (eventBlock && eventBlock.getNextBlock()) {  
+    runningEvents.add(blockType);
     
+    let lastId = null; 
     jsGen.init(workspace);
     let code = jsGen.blockToCode(eventBlock.getNextBlock());
     code += '\nawait flushActions();';
@@ -764,31 +800,31 @@ async function executeEventBlock(blockType) {
     try {
       const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
 
-		const doHighlightBlock = (id) => {
-		  if (!isRunning && !runningEvents.has(blockType)) return;
+      const doHighlightBlock = (id) => {
+        if (!isRunning && !runningEvents.has(blockType)) return;
 
-		  if (lastId) {
-			const lastBlock = workspace.getBlockById(lastId);
-			if (lastBlock) lastBlock.setHighlighted(false);
-		  }
+        if (lastId) {
+          const lastBlock = workspace.getBlockById(lastId);
+          if (lastBlock) lastBlock.setHighlighted(false);
+        }
 
-		  lastId = id;
-		  if (id) {
-			const block = workspace.getBlockById(id);
-			if (block) block.setHighlighted(true);
-		  }
-		};
+        lastId = id;
+        if (id) {
+          const block = workspace.getBlockById(id);
+          if (block) block.setHighlighted(true);
+        }
+      };
       
       const compiled = new AsyncFunction('sleep', 'highlightBlock', 'queueAction', 'flushActions', code);
       await compiled(sleep, doHighlightBlock, queueAction, flushActions);
     } catch (e) {
       if (e !== "STOPPED_BY_USER") console.error(`Błąd w zdarzeniu ${blockType}:`, e);
     } finally {
-	  runningEvents.delete(blockType);
+      runningEvents.delete(blockType);
       if (lastId) {
-		const lastBlock = workspace.getBlockById(lastId);
-		if (lastBlock) lastBlock.setHighlighted(false);
-	  }
+        const lastBlock = workspace.getBlockById(lastId);
+        if (lastBlock) lastBlock.setHighlighted(false);
+      }
     }
   }
 }
