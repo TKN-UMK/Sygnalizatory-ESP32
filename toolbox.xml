@@ -22,10 +22,8 @@
   </category>
   
   <category name="Przyciski" colour="#2EAFB0">
-	<block type="event_input_0_high"></block>
-	<block type="event_input_0_low"></block>
-	<block type="event_input_1_high"></block>
-	<block type="event_input_1_low"></block>
+	<block type="event_input_0_change"></block>
+	<block type="event_input_1_change"></block>
 	<block type="sensor_input_0"></block>
 	<block type="sensor_input_1"></block>
   </category>
