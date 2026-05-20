@@ -1,0 +1,15 @@
+{
+  "name": "Sygnalizacja świetlna",
+  "short_name": "Sygnalizatory",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0D1B2A",
+  "theme_color": "#0D1B2A",
+  "icons": [
+    {
+      "src": "/icons/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
