@@ -157,11 +157,11 @@ Blockly.Blocks['action_led_builtin'] = {
   init: function() {
 	this.appendDummyInput()
         .appendField("wbudowana dioda: 🔴")
-        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "R")
+        .appendField(new Blockly.FieldDropdown([["wył", "0"], ["wł", "1"]]), "R")
         .appendField("🟢")
-        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "G")
+        .appendField(new Blockly.FieldDropdown([["wył", "0"], ["wł", "1"]]), "G")
         .appendField("🔵")
-        .appendField(new Blockly.FieldDropdown([["wył", "LOW"], ["wł", "HIGH"]]), "B");
+        .appendField(new Blockly.FieldDropdown([["wył", "0"], ["wł", "1"]]), "B");
 	this.setPreviousStatement(true, null);
 	this.setNextStatement(true, null);
 	this.setTooltip("Sterowanie wbudowaną diodą świecącą");
