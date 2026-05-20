@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sygnalizatory-v67';
+const CACHE_NAME = 'sygnalizatory-v68';
 
 const FILES_TO_CACHE = [
   './',
@@ -65,8 +65,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
+    caches.match(event.request, { 
+      ignoreSearch: true 
+    }).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(event.request).catch((err) => {
+        console.warn('Brak sieci i brak pliku w cache dla:', event.request.url);
+        return new Response('', { status: 404, statusText: 'Offline Network Error' });
+      });
     })
   );
 });
