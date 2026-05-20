@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sygnalizatory-v66';
+const CACHE_NAME = 'sygnalizatory-v67';
 
 const FILES_TO_CACHE = [
   './',
@@ -18,7 +18,24 @@ const FILES_TO_CACHE = [
   './icons/menu.png',
   './icons/run.png',
   './icons/stop.png',
-  './icons/favicon.png'
+  './icons/favicon.png',
+  
+  './lib/media/1x1.gif',
+  './lib/media/click.mp3',
+  './lib/media/delete-icon.svg',
+  './lib/media/delete.mp3',
+  './lib/media/disconnect.mp3',
+  './lib/media/dropdown-arrow.svg',
+  './lib/media/foldout-icon.svg',
+  './lib/media/handclosed.cur',
+  './lib/media/handdelete.cur',
+  './lib/media/handopen.cur',
+  './lib/media/pilcrow.png',
+  './lib/media/quote0.png',
+  './lib/media/quote1.png',
+  './lib/media/resize-handle.svg',
+  './lib/media/sprites.png',
+  './lib/media/sprites.svg'
 ];
 
 self.addEventListener('install', (event) => {

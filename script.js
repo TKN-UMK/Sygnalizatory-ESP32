@@ -615,6 +615,7 @@ async function initApp() {
       grid: { spacing: 25, length: 3, colour: '#ccc', snap: true },
 	  zoom: { controls: true, wheel: true, startScale: 1.0 },
 	  trashcan: false,
+	  media: './lib/media/',
 	  renderer: 'zelos'
     });
 	
