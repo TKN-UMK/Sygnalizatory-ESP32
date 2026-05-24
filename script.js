@@ -22,8 +22,8 @@ let isLastInputTouch = false;
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('Service Worker zarejestrowany'))
-        .catch(err => console.log('Błąd SW:', err));
+        .then(() => console.log('SW ok'))
+        .catch(err => console.log('SW error:', err));
 }
 
 window.addEventListener('touchstart', () => {
@@ -191,7 +191,11 @@ Blockly.Blocks['action_wait'] = {
 jsGen.STATEMENT_PREFIX = 'highlightBlock(%1);\nawait sleep(0);\n';
 jsGen.addReservedWords('highlightBlock');
 
-jsGen.forBlock['event_start'] = () => '';
+jsGen.forBlock['event_start'] = function(block, generator)  {
+  const nextBlockCode = generator.blockToCode(block.getNextBlock());
+  return nextBlockCode;
+};
+
 jsGen.forBlock['event_input_0_high'] = () => '';
 jsGen.forBlock['event_input_0_low'] = () => '';
 jsGen.forBlock['event_input_1_high'] = () => '';
@@ -205,6 +209,30 @@ jsGen.forBlock['control_forever'] = (block) => {
 jsGen.forBlock['control_wait_until'] = (block) => {
   const condition = jsGen.valueToCode(block, 'CONDITION', jsGen.ORDER_NONE) || 'false';
   return `while (!(${condition})) {\n  await flushActions();\nawait sleep(10);\n}\n`;
+};
+
+jsGen.forBlock['procedures_defnoreturn'] = function(block, generator) {
+  const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+  const branch = generator.statementToCode(block, 'STACK');
+  return `async function ${funcName}() {\n${branch}}\n`;
+};
+
+jsGen.forBlock['procedures_callnoreturn'] = function(block, generator) {
+  const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+  return `await ${funcName}();\n`;
+};
+
+jsGen.forBlock['procedures_defreturn'] = function(block, generator) {
+  const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+  const branch = generator.statementToCode(block, 'STACK');
+  const returnValue = generator.valueToCode(block, 'RETURN', generator.ORDER_NONE) || '';
+  const returnCode = returnValue ? `  return ${returnValue};\n` : '';
+  return `async function ${funcName}() {\n${branch}${returnCode}}\n`;
+};
+
+jsGen.forBlock['procedures_callreturn'] = function(block, generator) {
+  const funcName = generator.getProcedureName(block.getFieldValue('NAME'));
+  return [`await ${funcName}()`, generator.ORDER_AWAIT || 0];
 };
 
 jsGen.forBlock['sensor_input_0'] = (block) => {
@@ -705,7 +733,7 @@ async function runCode() {
   currentController = new AbortController();
 
   jsGen.init(workspace);
-  let code = jsGen.blockToCode(startBlock.getNextBlock());
+  let code = jsGen.workspaceToCode(workspace);
   
   code += '\nawait flushActions();';
 
