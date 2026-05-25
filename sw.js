@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sygnalizatory-v71';
+const CACHE_NAME = 'sygnalizatory-v72';
 
 const FILES_TO_CACHE = [
   './',
