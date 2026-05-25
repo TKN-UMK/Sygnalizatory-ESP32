@@ -196,10 +196,15 @@ jsGen.forBlock['event_start'] = function(block, generator)  {
   return nextBlockCode;
 };
 
-jsGen.forBlock['event_input_0_high'] = () => '';
-jsGen.forBlock['event_input_0_low'] = () => '';
-jsGen.forBlock['event_input_1_high'] = () => '';
-jsGen.forBlock['event_input_1_low'] = () => '';
+jsGen.forBlock['event_input_0_change'] = function(block, generator) {
+  const nextBlockCode = generator.blockToCode(block.getNextBlock());
+  return ''; 
+};
+
+jsGen.forBlock['event_input_1_change'] = function(block, generator) {
+  const nextBlockCode = generator.blockToCode(block.getNextBlock());
+  return ''; 
+};
 
 jsGen.forBlock['control_forever'] = (block) => {
   const branch = jsGen.statementToCode(block, 'STACK');
