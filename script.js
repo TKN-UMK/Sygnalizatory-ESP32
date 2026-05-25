@@ -192,8 +192,7 @@ jsGen.STATEMENT_PREFIX = 'highlightBlock(%1);\nawait sleep(0);\n';
 jsGen.addReservedWords('highlightBlock');
 
 jsGen.forBlock['event_start'] = function(block, generator)  {
-  const nextBlockCode = generator.blockToCode(block.getNextBlock());
-  return nextBlockCode;
+  return '';
 };
 
 jsGen.forBlock['event_input_0_change'] = function(block, generator) {
@@ -737,10 +736,25 @@ async function runCode() {
   currentController.abort();
   currentController = new AbortController();
 
+
   jsGen.init(workspace);
-  let code = jsGen.workspaceToCode(workspace);
+  
+  let proceduresCode = '';
+  const functionBlocks = workspace.getBlocksByType('procedures_defnoreturn')
+    .concat(workspace.getBlocksByType('procedures_defreturn'));
+
+  functionBlocks.forEach(fb => {
+    proceduresCode += jsGen.blockToCode(fb) + '\n';
+  });
+  
+  let mainCode = jsGen.blockToCode(startBlock);
+  
+  let code = proceduresCode + '\n' + mainCode;
   
   code += '\nawait flushActions();';
+
+
+  console.log(code);
 
   const btn = document.getElementById('runStopButton');
   isRunning = true;
@@ -765,7 +779,7 @@ async function runCode() {
 	  }
 	};
 
-    const compiledCode = new AsyncFunction('sleep', 'highlightBlock', 'queueAction', 'flushActions', code);    
+    const compiledCode = new AsyncFunction('sleep', 'highlightBlock', 'queueAction', 'flushActions', code);
     await compiledCode(sleep, doHighlightBlock, queueAction, flushActions);
 
   } catch (e) {
@@ -834,7 +848,17 @@ async function executeEventBlock(index, triggeredState) {
     
     let lastId = null; 
     jsGen.init(workspace);
-    let code = jsGen.blockToCode(eventBlock.getNextBlock());
+    
+    let proceduresCode = '';
+    const functionBlocks = workspace.getBlocksByType('procedures_defnoreturn')
+      .concat(workspace.getBlocksByType('procedures_defreturn'));
+
+    functionBlocks.forEach(fb => {
+      proceduresCode += jsGen.blockToCode(fb) + '\n';
+    });
+    
+    let code = proceduresCode + '\n' + jsGen.blockToCode(eventBlock.getNextBlock());
+    
     code += '\nawait flushActions();';
 
     try {
